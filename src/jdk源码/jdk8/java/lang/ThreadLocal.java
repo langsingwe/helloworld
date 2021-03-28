@@ -157,17 +157,17 @@ public class ThreadLocal<T> {
      * @return the current thread's value of this thread-local
      */
     public T get() {
-        Thread t = Thread.currentThread();
-        ThreadLocalMap map = getMap(t);
+        Thread t = Thread.currentThread(); // 获取当前线程
+        ThreadLocalMap map = getMap(t); // 获取当前线程的threadLocals变量
         if (map != null) {
-            ThreadLocalMap.Entry e = map.getEntry(this);
+            ThreadLocalMap.Entry e = map.getEntry(this); // 不为空，返回对应的本地变量
             if (e != null) {
                 @SuppressWarnings("unchecked")
                 T result = (T)e.value;
                 return result;
             }
         }
-        return setInitialValue();
+        return setInitialValue(); // 空的，初始化当前线程的 threadLocals 成员变量
     }
 
     /**
@@ -177,7 +177,7 @@ public class ThreadLocal<T> {
      * @return the initial value
      */
     private T setInitialValue() {
-        T value = initialValue();
+        T value = initialValue();//初始化为null
         Thread t = Thread.currentThread();
         ThreadLocalMap map = getMap(t);
         if (map != null)
@@ -197,12 +197,12 @@ public class ThreadLocal<T> {
      *        this thread-local.
      */
     public void set(T value) {
-        Thread t = Thread.currentThread();
-        ThreadLocalMap map = getMap(t);
+        Thread t = Thread.currentThread(); // 获取当前线程
+        ThreadLocalMap map = getMap(t); // 当前线程作为key，去查找对应的线程变量，找到则设置
         if (map != null)
             map.set(this, value);
         else
-            createMap(t, value);
+            createMap(t, value); // 第一次调用就创建当前线程对应的HashMap
     }
 
     /**

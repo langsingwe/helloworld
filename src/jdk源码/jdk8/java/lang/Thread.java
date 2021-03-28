@@ -370,7 +370,7 @@ class Thread implements Runnable {
         }
 
         this.name = name;
-
+        // 获取当前线程
         Thread parent = currentThread();
         SecurityManager security = System.getSecurityManager();
         if (g == null) {

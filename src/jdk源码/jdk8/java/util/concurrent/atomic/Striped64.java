@@ -117,7 +117,7 @@ abstract class Striped64 extends Number {
      * JVM intrinsics note: It would be possible to use a release-only
      * form of CAS here, if it were provided.
      */
-    @sun.misc.Contended static final class Cell {
+    @sun.misc.Contended static final class Cell {//@sun.misc.Contended修饰是为了避免伪共享
         volatile long value;
         Cell(long x) { value = x; }
         final boolean cas(long cmp, long val) {
