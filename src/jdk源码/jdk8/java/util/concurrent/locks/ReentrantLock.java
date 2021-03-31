@@ -129,14 +129,14 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         final boolean nonfairTryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
-            if (c == 0) {
-                if (compareAndSetState(0, acquires)) {
-                    setExclusiveOwnerThread(current);
+            if (c == 0) {//AQS状态为0
+                if (compareAndSetState(0, acquires)) {//尝试CAS获取锁
+                    setExclusiveOwnerThread(current);//设置当前锁的持有锁是当前线程
                     return true;
                 }
             }
-            else if (current == getExclusiveOwnerThread()) {
-                int nextc = c + acquires;
+            else if (current == getExclusiveOwnerThread()) {//当前线程是锁的持有者
+                int nextc = c + acquires;//AQS状态+1
                 if (nextc < 0) // overflow
                     throw new Error("Maximum lock count exceeded");
                 setState(nextc);
@@ -146,15 +146,15 @@ public class ReentrantLock implements Lock, java.io.Serializable {
         }
 
         protected final boolean tryRelease(int releases) {
-            int c = getState() - releases;
+            int c = getState() - releases;//AQS的状态-1
             if (Thread.currentThread() != getExclusiveOwnerThread())
-                throw new IllegalMonitorStateException();
+                throw new IllegalMonitorStateException();//如果持有锁的线程不是当前线程，抛出异常
             boolean free = false;
-            if (c == 0) {
+            if (c == 0) {//如果可重入次数为0，清空锁持有线程
                 free = true;
                 setExclusiveOwnerThread(null);
             }
-            setState(c);
+            setState(c);//否则设置可重入次数为原始值-1
             return free;
         }
 
