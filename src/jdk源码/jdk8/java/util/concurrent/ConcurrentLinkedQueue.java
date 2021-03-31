@@ -324,13 +324,13 @@ public class ConcurrentLinkedQueue<E> extends AbstractQueue<E>
      * @throws NullPointerException if the specified element is null
      */
     public boolean offer(E e) {
-        checkNotNull(e);
+        checkNotNull(e);//null抛出NPE异常
         final Node<E> newNode = new Node<E>(e);
 
         for (Node<E> t = tail, p = t;;) {
             Node<E> q = p.next;
             if (q == null) {
-                // p is last node
+                // p 是尾结点
                 if (p.casNext(null, newNode)) {
                     // Successful CAS is the linearization point
                     // for e to become an element of this queue,
