@@ -323,12 +323,12 @@ public class ArrayBlockingQueue<E> extends AbstractQueue<E>
      */
     public boolean offer(E e) {
         checkNotNull(e);
-        final ReentrantLock lock = this.lock;
+        final ReentrantLock lock = this.lock; // 获取独占锁
         lock.lock();
-        try {
+        try { // 队列满，返回false
             if (count == items.length)
                 return false;
-            else {
+            else { // 队列不满，入队
                 enqueue(e);
                 return true;
             }
