@@ -1,4 +1,4 @@
-package java并发编程之美.ch11;
+package java并发编程之美.ch10;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
