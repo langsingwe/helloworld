@@ -260,8 +260,8 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public static Class<?> forName(String className)
                 throws ClassNotFoundException {
-        Class<?> caller = Reflection.getCallerClass();
-        return forName0(className, true, ClassLoader.getClassLoader(caller), caller);
+        Class<?> caller = Reflection.getCallerClass();// 先获取classLoader
+        return forName0(className, true, ClassLoader.getClassLoader(caller), caller); // 调用native方法获取类的信息
     }
 
 
@@ -392,7 +392,7 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public T newInstance()
         throws InstantiationException, IllegalAccessException
-    {
+    {   // 1.权限检查
         if (System.getSecurityManager() != null) {
             checkMemberAccess(Member.PUBLIC, Reflection.getCallerClass(), false);
         }
@@ -400,14 +400,14 @@ public final class Class<T> implements java.io.Serializable,
         // NOTE: the following code may not be strictly correct under
         // the current Java memory model.
 
-        // Constructor lookup
+        // newInstance相当于调用类的无参构造函数，首先要找到它的无参构造器
         if (cachedConstructor == null) {
             if (this == Class.class) {
                 throw new IllegalAccessException(
                     "Can not call newInstance() on the Class for java.lang.Class"
                 );
             }
-            try {
+            try {//2.查找无参构造函数，并且缓存起来
                 Class<?>[] empty = {};
                 final Constructor<T> c = getConstructor0(empty, Member.DECLARED);
                 // Disable accessibility checks on the constructor
@@ -437,7 +437,7 @@ public final class Class<T> implements java.io.Serializable,
                 newInstanceCallerCache = caller;
             }
         }
-        // Run constructor
+        // 3.调用具体方法的无参构造方法，生成示例并返回
         try {
             return tmpConstructor.newInstance((Object[])null);
         } catch (InvocationTargetException e) {
@@ -2502,14 +2502,14 @@ public final class Class<T> implements java.io.Serializable,
         // -> create and replace new instance
         return newReflectionData(reflectionData, classRedefinedCount);
     }
-
+    // 新创建缓存，保存反射信息
     private ReflectionData<T> newReflectionData(SoftReference<ReflectionData<T>> oldReflectionData,
                                                 int classRedefinedCount) {
         if (!useCaches) return null;
 
         while (true) {
             ReflectionData<T> rd = new ReflectionData<>(classRedefinedCount);
-            // try to CAS it...
+            // 使用CAS保证线程的安全性，所以反射是线程安全的
             if (Atomic.casReflectionData(this, oldReflectionData, new SoftReference<>(rd))) {
                 return rd;
             }
@@ -2657,7 +2657,7 @@ public final class Class<T> implements java.io.Serializable,
     private Constructor<T>[] privateGetDeclaredConstructors(boolean publicOnly) {
         checkInitted();
         Constructor<T>[] res;
-        ReflectionData<T> rd = reflectionData();
+        ReflectionData<T> rd = reflectionData();//软引用保存获取的信息
         if (rd != null) {
             res = publicOnly ? rd.publicConstructors : rd.declaredConstructors;
             if (res != null) return res;
@@ -2667,10 +2667,10 @@ public final class Class<T> implements java.io.Serializable,
             @SuppressWarnings("unchecked")
             Constructor<T>[] temporaryRes = (Constructor<T>[]) new Constructor<?>[0];
             res = temporaryRes;
-        } else {
+        } else {//使用native方法，从jvm获取构造器
             res = getDeclaredConstructors0(publicOnly);
         }
-        if (rd != null) {
+        if (rd != null) {//将jvm中读取的内容，存入缓存
             if (publicOnly) {
                 rd.publicConstructors = res;
             } else {
@@ -3071,7 +3071,7 @@ public final class Class<T> implements java.io.Serializable,
 
     private Constructor<T> getConstructor0(Class<?>[] parameterTypes,
                                         int which) throws NoSuchMethodException
-    {
+    {   //获取所有的构造器
         Constructor<T>[] constructors = privateGetDeclaredConstructors((which == Member.PUBLIC));
         for (Constructor<T> constructor : constructors) {
             if (arrayContentsEq(parameterTypes,
