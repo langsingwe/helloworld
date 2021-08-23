@@ -1,4 +1,4 @@
-package generic;
+package java核心技术卷1. generic;
 
 /**
  * @author weilc

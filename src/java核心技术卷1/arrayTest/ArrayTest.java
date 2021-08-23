@@ -1,4 +1,4 @@
-package arrayTest;
+package java核心技术卷1. arrayTest;
 
 import java.util.Arrays;
 

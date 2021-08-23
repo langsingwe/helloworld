@@ -1,4 +1,4 @@
-package innerClass;
+package java核心技术卷1. innerClass;
 
 import javax.swing.*;
 import java.awt.*;

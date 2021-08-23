@@ -1,4 +1,4 @@
-package sortTest;
+package java核心技术卷1. sortTest;
 
 public class Employee implements Comparable<Employee> {
 

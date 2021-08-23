@@ -1,4 +1,4 @@
-package thread.demo;
+package java核心技术卷1. thread.demo;
 
 /**
  * 死锁demo

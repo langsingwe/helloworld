@@ -1,4 +1,4 @@
-package thread.demo;
+package java核心技术卷1. thread.demo;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 

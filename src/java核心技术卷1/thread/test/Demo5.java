@@ -1,4 +1,4 @@
-package thread.test;
+package java核心技术卷1. thread.test;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;

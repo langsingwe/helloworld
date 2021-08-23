@@ -1,4 +1,4 @@
-package thread.demo.calc;
+package java核心技术卷1. thread.demo.calc;
 
 import java.util.concurrent.CountDownLatch;
 
